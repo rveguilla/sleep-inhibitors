@@ -1,0 +1,13 @@
+{
+  "uuid": "sleep-inhibitors@local",
+  "name": "Sleep Inhibitors",
+  "description": "Lists applications and processes currently preventing the computer from sleeping (via systemd-logind and GNOME Session Manager).",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48",
+    "49"
+  ],
+  "version": 1
+}

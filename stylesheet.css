@@ -1,0 +1,80 @@
+.sleep-inhibitors-panel-box {
+    spacing: 4px;
+}
+
+.sleep-inhibitors-icon.sleep-inhibitors-inactive {
+    opacity: 0.45;
+}
+
+.sleep-inhibitors-icon.sleep-inhibitors-active {
+    opacity: 1;
+}
+
+.sleep-inhibitors-count {
+    font-size: 0.85em;
+    font-weight: bold;
+    padding-left: 2px;
+}
+
+.sleep-inhibitors-header {
+    font-weight: bold;
+}
+
+.sleep-inhibitors-empty {
+    color: rgba(255, 255, 255, 0.65);
+    font-style: italic;
+}
+
+.sleep-inhibitors-item {
+    spacing: 10px;
+    min-width: 300px;
+    max-width: 420px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.sleep-inhibitors-item-icon {
+    margin-top: 2px;
+}
+
+.sleep-inhibitors-item-body {
+    spacing: 2px;
+}
+
+.sleep-inhibitors-item-title-row {
+    spacing: 8px;
+}
+
+.sleep-inhibitors-item-name {
+    font-weight: bold;
+}
+
+.sleep-inhibitors-muted {
+    opacity: 0.7;
+}
+
+.sleep-inhibitors-badge {
+    font-size: 0.8em;
+    padding: 1px 6px;
+    border-radius: 6px;
+}
+
+.sleep-inhibitors-badge-active {
+    background-color: rgba(246, 166, 35, 0.25);
+    color: #f9c76b;
+}
+
+.sleep-inhibitors-badge-passive {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.sleep-inhibitors-item-reason {
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.sleep-inhibitors-item-meta {
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.55);
+}
