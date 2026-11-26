@@ -1,6 +1,6 @@
 # Sleep Inhibitors (GNOME Shell Extension)
 
-A GNOME Shell (45–49) top-bar extension that lists applications and processes currently preventing your computer from sleeping or going idle.
+A GNOME Shell (45–51) top-bar extension that lists applications and processes currently preventing your computer from sleeping or going idle.
 
 ## Features
 

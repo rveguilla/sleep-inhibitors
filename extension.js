@@ -11,7 +11,7 @@ import {filterAndSortInhibitors} from './inhibitorLogic.js';
 import {InhibitorMonitor} from './inhibitors.js';
 
 /**
- * Create a vertical St.BoxLayout compatible across GNOME Shell 45-49.
+ * Create a vertical St.BoxLayout compatible across GNOME Shell 45-51.
  */
 function createVerticalBox(params = {}) {
     const box = new St.BoxLayout(params);
