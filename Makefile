@@ -1,6 +1,6 @@
 UUID := sleep-inhibitors@local
 INSTALL_DIR := $(HOME)/.local/share/gnome-shell/extensions/$(UUID)
-FILES := metadata.json extension.js inhibitors.js inhibitorLogic.js stylesheet.css
+FILES := metadata.json extension.js inhibitors.js inhibitorLogic.js stylesheet.css LICENSE
 
 .PHONY: install uninstall pack test check
 

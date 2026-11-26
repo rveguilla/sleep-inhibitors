@@ -59,3 +59,7 @@ To view extension logs on your GNOME desktop:
 ```bash
 journalctl -f -o cat /usr/bin/gnome-shell
 ```
+
+## License
+
+This project is licensed under the [GNU General Public License v3.0 or later](LICENSE) (`GPL-3.0-or-later`).
