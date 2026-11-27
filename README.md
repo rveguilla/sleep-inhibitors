@@ -62,6 +62,15 @@ To view extension logs on your GNOME desktop:
 journalctl -f -o cat /usr/bin/gnome-shell
 ```
 
+## Releasing
+
+Pushing a version tag (e.g. `v1.0.0`) triggers the [CI & Release](.github/workflows/ci.yml) GitHub Actions workflow, which validates `metadata.json`, runs `make check` and `make test`, builds the `.shell-extension.zip` bundle via `make pack`, verifies the archive contents, and publishes a GitHub Release with the zip attached:
+
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+
 ## License
 
 This project is licensed under the [GNU General Public License v3.0 or later](LICENSE) (`GPL-3.0-or-later`).

@@ -1,0 +1,91 @@
+name: CI & Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Build, Test & Verify
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate metadata.json
+        run: |
+          jq -e '
+            (.uuid | type == "string" and length > 0) and
+            (.name | type == "string" and length > 0) and
+            (.description | type == "string" and length > 0) and
+            (.url | type == "string" and startswith("https://")) and
+            (."shell-version" | type == "array" and length > 0) and
+            (has("version") | not)
+          ' metadata.json > /dev/null
+
+      - name: Syntax check
+        run: make check
+
+      - name: Run unit tests
+        run: make test
+
+      - name: Pack extension bundle
+        run: make pack
+
+      - name: Verify packed archive contents
+        run: |
+          ZIP_FILE="$(jq -r '.uuid' metadata.json).shell-extension.zip"
+          test -f "$ZIP_FILE"
+          unzip -l "$ZIP_FILE"
+          # Ensure required runtime files are present
+          for f in metadata.json extension.js inhibitors.js inhibitorLogic.js stylesheet.css LICENSE; do
+            unzip -Z1 "$ZIP_FILE" | grep -qx "$f" || { echo "Missing $f in $ZIP_FILE"; exit 1; }
+          done
+          # Ensure no extra/unnecessary files are bundled
+          COUNT="$(unzip -Z1 "$ZIP_FILE" | wc -l)"
+          test "$COUNT" -eq 6 || { echo "Expected 6 files in $ZIP_FILE, found $COUNT"; exit 1; }
+
+      - name: Upload extension archive artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-bundle
+          path: '*.shell-extension.zip'
+          if-no-files-found: error
+
+  release:
+    name: Publish GitHub Release
+    needs: verify
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download verified extension bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-bundle
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ZIP_FILE="$(ls *.shell-extension.zip)"
+          gh release create "${GITHUB_REF_NAME}" \
+            "${ZIP_FILE}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "Sleep Inhibitors ${GITHUB_REF_NAME}" \
+            --generate-notes
