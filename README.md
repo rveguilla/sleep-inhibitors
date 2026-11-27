@@ -64,7 +64,7 @@ journalctl -f -o cat /usr/bin/gnome-shell
 
 ## Releasing
 
-Pushing a version tag (e.g. `v1.0.0`) triggers the [CI & Release](.github/workflows/ci.yml) GitHub Actions workflow, which validates `metadata.json`, runs `make check` and `make test`, builds the `.shell-extension.zip` bundle via `make pack`, verifies the archive contents, and publishes a GitHub Release with the zip attached:
+Pushing a version tag (e.g. `v1.0.0`) triggers the [CI & Release](.github/workflows/ci.yml) GitHub Actions workflow, which validates `metadata.json`, runs `make check` and `make test`, stamps `"version-name"` from the tag (e.g. `"1.0.0"`) into the packaged `metadata.json`, builds the `.shell-extension.zip` bundle via `make pack`, verifies the archive contents, and publishes a GitHub Release with the zip attached:
 
 ```bash
 git tag v1.0.0
