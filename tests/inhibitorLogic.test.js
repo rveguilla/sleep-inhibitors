@@ -4,6 +4,7 @@ import test from 'node:test';
 import {
     GSM_INHIBITOR_FLAGS,
     filterAndSortInhibitors,
+    formatProcessName,
     formatSessionFlags,
     parseLogindInhibitor,
     parseSessionInhibitor,
@@ -126,4 +127,41 @@ test('filterAndSortInhibitors hides passive locks by default and sorts active bl
         fullView.visible.map(i => i.name),
         ['Backup Script', 'VLC', 'NetworkManager']
     );
+});
+
+test('formatProcessName extracts binary filename from paths while keeping plain names', () => {
+    assert.equal(formatProcessName('/usr/bin/firefox'), 'firefox');
+    assert.equal(formatProcessName('/usr/lib/chromium/chrome --type=browser'), 'chrome');
+    assert.equal(formatProcessName('/opt/Visual Studio Code/code'), 'code');
+    assert.equal(formatProcessName('./my-script.sh'), 'my-script.sh');
+    assert.equal(formatProcessName('~/bin/backup'), 'backup');
+    assert.equal(formatProcessName('NetworkManager'), 'NetworkManager');
+    assert.equal(formatProcessName('Audio/Video Player'), 'Audio/Video Player');
+    assert.equal(formatProcessName(''), '');
+});
+
+test('parseLogindInhibitor and parseSessionInhibitor strip full paths and prefer displayName', () => {
+    const logindPath = parseLogindInhibitor([
+        'sleep',
+        '/usr/lib/chromium/chrome',
+        'Playing video',
+        'block',
+        1000,
+        777,
+    ]);
+    assert.equal(logindPath.name, 'chrome');
+
+    const logindResolved = parseLogindInhibitor(
+        ['sleep', '/usr/bin/firefox', 'Downloading', 'block', 1000, 888],
+        'Firefox'
+    );
+    assert.equal(logindResolved.name, 'Firefox');
+
+    const sessionPath = parseSessionInhibitor({
+        objectPath: '/org/gnome/SessionManager/Inhibitor9',
+        appId: '/usr/bin/mpv',
+        reason: 'Playing media',
+        flags: GSM_INHIBITOR_FLAGS.IDLE,
+    });
+    assert.equal(sessionPath.name, 'mpv');
 });

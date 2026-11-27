@@ -24,13 +24,35 @@ const LOGIND_WHAT_LABELS = Object.freeze({
 const LOGIND_SLEEP_WHAT = new Set(['sleep', 'idle']);
 
 /**
+ * Normalize a raw process/app name: if it is a filesystem path (e.g. /usr/bin/firefox),
+ * return just the binary filename; otherwise return the trimmed string as-is.
+ *
+ * @param {string} rawName
+ * @returns {string}
+ */
+export function formatProcessName(rawName) {
+    const trimmed = String(rawName || '').trim();
+    if (!trimmed)
+        return '';
+
+    if (/^(?:\/|\.\.?\/|~\/)/.test(trimmed)) {
+        const withoutFlags = trimmed.replace(/\s+-.*$/, '').replace(/\/+$/, '');
+        const base = withoutFlags.split('/').pop();
+        return base || trimmed;
+    }
+
+    return trimmed;
+}
+
+/**
  * Parse a single tuple from org.freedesktop.login1.Manager.ListInhibitors().
  * Tuple format: [what, who, why, mode, uid, pid]
  *
  * @param {Array} tuple
+ * @param {string|null} [displayName]
  * @returns {object} Normalized inhibitor object
  */
-export function parseLogindInhibitor(tuple) {
+export function parseLogindInhibitor(tuple, displayName = null) {
     const [whatRaw = '', who = '', why = '', mode = '', uid = 0, pid = 0] = tuple;
     const whatList = String(whatRaw)
         .split(':')
@@ -42,12 +64,13 @@ export function parseLogindInhibitor(tuple) {
 
     const whatLabels = whatList.map(item => LOGIND_WHAT_LABELS[item] ?? item);
     const modeLabel = mode === 'block' ? 'Block' : mode === 'delay' ? 'Delay' : mode;
+    const formattedWho = formatProcessName(who);
 
     return {
         id: `logind:${pid}:${who}:${whatRaw}:${mode}`,
         source: 'logind',
         sourceLabel: 'systemd-logind',
-        name: who || (pid ? `PID ${pid}` : 'Unknown Process'),
+        name: displayName || formattedWho || (pid ? `PID ${pid}` : 'Unknown Process'),
         appId: null,
         reason: why || 'No reason provided',
         what: whatList,
@@ -104,7 +127,7 @@ export function parseSessionInhibitor({
         numericFlags & (GSM_INHIBITOR_FLAGS.SUSPEND | GSM_INHIBITOR_FLAGS.IDLE)
     );
 
-    const cleanedAppId = String(appId || '').replace(/\.desktop$/i, '');
+    const cleanedAppId = formatProcessName(String(appId || '').replace(/\.desktop$/i, ''));
     const name = displayName || cleanedAppId || 'Unknown Application';
 
     return {

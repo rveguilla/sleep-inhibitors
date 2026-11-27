@@ -3,6 +3,7 @@ import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
 
 import {
+    formatProcessName,
     parseLogindInhibitor,
     parseSessionInhibitor,
 } from './inhibitorLogic.js';
@@ -54,11 +55,19 @@ function resolveDesktopApp(appId) {
 
     try {
         const appSystem = Shell.AppSystem.get_default();
-        const candidates = appId.endsWith('.desktop')
-            ? [appId]
-            : [`${appId}.desktop`, appId];
+        const normalized = formatProcessName(appId);
+        const candidates = [];
+        for (const raw of [appId, normalized]) {
+            if (!raw)
+                continue;
+            if (raw.endsWith('.desktop')) {
+                candidates.push(raw);
+            } else {
+                candidates.push(`${raw}.desktop`, raw);
+            }
+        }
 
-        for (const candidate of candidates) {
+        for (const candidate of new Set(candidates)) {
             const app = appSystem.lookup_app(candidate);
             if (app) {
                 const appInfo = app.get_app_info?.();
@@ -192,7 +201,13 @@ export class InhibitorMonitor {
 
             const [tuples] = reply.deepUnpack();
             this._logindWarned = false;
-            return tuples.map(tuple => parseLogindInhibitor(tuple));
+            return tuples.map(tuple => {
+                const whoBase = formatProcessName(tuple[1]);
+                const {displayName, gicon} = resolveDesktopApp(whoBase);
+                const item = parseLogindInhibitor(tuple, displayName);
+                item.gicon = gicon;
+                return item;
+            });
         } catch (err) {
             if (!err.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED) && !this._logindWarned) {
                 this._logindWarned = true;
