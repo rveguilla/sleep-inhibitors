@@ -2,7 +2,7 @@
   "uuid": "sleep-inhibitors@rveguilla.github.io",
   "name": "Sleep Inhibitors",
   "description": "Lists applications and processes currently preventing the computer from sleeping (via systemd-logind and GNOME Session Manager).",
-  "url": "https://github.com/rveguilla/sleep-inhibitors",
+  "url": "https://github.com/rveguilla/sleep-inhibitors-gnome-shell-extension",
   "shell-version": [
     "45",
     "46",
