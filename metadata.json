@@ -1,7 +1,8 @@
 {
-  "uuid": "sleep-inhibitors@local",
+  "uuid": "sleep-inhibitors@rveguilla.github.io",
   "name": "Sleep Inhibitors",
   "description": "Lists applications and processes currently preventing the computer from sleeping (via systemd-logind and GNOME Session Manager).",
+  "url": "https://github.com/rveguilla/sleep-inhibitors",
   "shell-version": [
     "45",
     "46",
@@ -10,6 +11,5 @@
     "49",
     "50",
     "51"
-  ],
-  "version": 2
+  ]
 }

@@ -1,4 +1,4 @@
-UUID := sleep-inhibitors@local
+UUID := sleep-inhibitors@rveguilla.github.io
 INSTALL_DIR := $(HOME)/.local/share/gnome-shell/extensions/$(UUID)
 FILES := metadata.json extension.js inhibitors.js inhibitorLogic.js stylesheet.css LICENSE
 

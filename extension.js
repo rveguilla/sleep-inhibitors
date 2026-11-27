@@ -69,14 +69,14 @@ class SleepInhibitorsIndicator extends PanelMenu.Button {
             'Show system & delay locks',
             this._includeAllLocks
         );
-        this._showAllToggle.connect('toggled', (_item, state) => {
+        this._showAllSignalId = this._showAllToggle.connect('toggled', (_item, state) => {
             this._includeAllLocks = state;
             this._render();
         });
         this.menu.addMenuItem(this._showAllToggle);
 
         this._refreshItem = new PopupMenu.PopupMenuItem('Refresh');
-        this._refreshItem.connect('activate', () => {
+        this._refreshSignalId = this._refreshItem.connect('activate', () => {
             this._monitor?.refresh();
         });
         this.menu.addMenuItem(this._refreshItem);
@@ -219,6 +219,16 @@ class SleepInhibitorsIndicator extends PanelMenu.Button {
     }
 
     destroy() {
+        if (this._showAllSignalId) {
+            this._showAllToggle?.disconnect(this._showAllSignalId);
+            this._showAllSignalId = 0;
+        }
+
+        if (this._refreshSignalId) {
+            this._refreshItem?.disconnect(this._refreshSignalId);
+            this._refreshSignalId = 0;
+        }
+
         if (this._menuOpenSignalId) {
             this.menu.disconnect(this._menuOpenSignalId);
             this._menuOpenSignalId = 0;

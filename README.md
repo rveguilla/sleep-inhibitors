@@ -25,14 +25,14 @@ make install
 Then restart GNOME Shell (log out and back in on Wayland, or press `Alt+F2` → `r` → `Enter` on X11) and enable the extension:
 
 ```bash
-gnome-extensions enable sleep-inhibitors@local
+gnome-extensions enable sleep-inhibitors@rveguilla.github.io
 ```
 
 Or build a distributable archive:
 
 ```bash
 make pack
-gnome-extensions install --force sleep-inhibitors@local.shell-extension.zip
+gnome-extensions install --force sleep-inhibitors@rveguilla.github.io.shell-extension.zip
 ```
 
 ## Testing It Live

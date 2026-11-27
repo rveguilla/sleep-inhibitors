@@ -90,6 +90,8 @@ export class InhibitorMonitor {
         this._sessionAddedSignalId = 0;
         this._sessionRemovedSignalId = 0;
         this._pollTimeoutId = 0;
+        this._logindWarned = false;
+        this._sessionWarned = false;
 
         this._subscribeSignals();
         this._startPolling();
@@ -189,10 +191,13 @@ export class InhibitorMonitor {
             );
 
             const [tuples] = reply.deepUnpack();
+            this._logindWarned = false;
             return tuples.map(tuple => parseLogindInhibitor(tuple));
         } catch (err) {
-            if (!err.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+            if (!err.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED) && !this._logindWarned) {
+                this._logindWarned = true;
                 console.warn('[sleep-inhibitors] Could not query systemd-logind:', err.message);
+            }
             return [];
         }
     }
@@ -211,13 +216,16 @@ export class InhibitorMonitor {
             );
 
             const [objectPaths] = reply.deepUnpack();
+            this._sessionWarned = false;
             const results = await Promise.all(
                 objectPaths.map(path => this._fetchSingleSessionInhibitor(path))
             );
             return results.filter(Boolean);
         } catch (err) {
-            if (!err.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+            if (!err.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED) && !this._sessionWarned) {
+                this._sessionWarned = true;
                 console.warn('[sleep-inhibitors] Could not query GNOME SessionManager:', err.message);
+            }
             return [];
         }
     }
