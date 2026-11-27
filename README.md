@@ -2,6 +2,8 @@
 
 A GNOME Shell (45–51) top-bar extension that lists applications and processes currently preventing your computer from sleeping or going idle.
 
+![Sleep Inhibitors extension screenshot](docs/screenshot.png)
+
 ## Features
 
 - **Dual inhibitor sources**:
